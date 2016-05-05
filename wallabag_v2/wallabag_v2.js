@@ -1,4 +1,4 @@
-function postArticleTowallabag(id) {
+function postArticleToWallabag(id) {
     var postApi = function(ti) {
 	var xhr = new XMLHttpRequest();
 	xhr.open('HEAD', ti.wallabag_url + '/api/entries.json', true);
