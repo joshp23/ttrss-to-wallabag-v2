@@ -5,13 +5,9 @@ A Wallabag v 2.x plugin for Tiny-Tiny-RSS designed to login via Oauth and work w
 
 ### Installing the plugin:
 
-1. Copy this repo into the plugins.local folder of your ttrss:  
+1. Download this repo and extract the wallabag_v2 folder into the plugins.local folder of your ttrss:  
 
-	```bash
-	cp /path/to/ttrss-wallabag-plugin /path/to/tinyrss/plugins.local/wallabag_v2
-	```  
-
-2. You'll also need to restart the application for changes to take place.  
+2. Restart the application for changes to take place.  
 
 	If you're running something like php-fpm:
 
