@@ -1,7 +1,6 @@
 <?php
 class Wallabag_v2 extends Plugin {
-// user_error("debug message", E_USER_WARNING);
-
+	
 	private $host;
 
 	function about() {
@@ -97,7 +96,7 @@ class Wallabag_v2 extends Plugin {
 	}
 
 	function getwallabagInfo() {
-		include 'oauth.class.php';
+		include 'oauth.php';
 		$id = db_escape_string($_REQUEST['id']);
 
 		$result = db_query("SELECT title, link
