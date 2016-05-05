@@ -1,5 +1,5 @@
 <?php
-$endpoint = $wallabag_url . 'oauth/v2/token';
+$endpoint = $wallabag_url . '/oauth/v2/token';
 $params = array(
 	"client_id" => "$wallabag_client_id",
 	"client_secret" => "$wallabag_client_secret",
