@@ -96,7 +96,6 @@ class Wallabag_v2 extends Plugin {
 	}
 
 	function getwallabagInfo() {
-		include 'oauth.php';
 		$id = db_escape_string($_REQUEST['id']);
 
 		$result = db_query("SELECT title, link
@@ -113,7 +112,9 @@ class Wallabag_v2 extends Plugin {
 		$wallabag_password = $this->host->get($this, "wallabag_password");
 	        $wallabag_client_id = $this->host->get($this, "wallabag_client_id");
 	        $wallabag_client_secret = $this->host->get($this, "wallabag_client_secret");
-		
+	        
+		include 'oauth.php';
+
 		print json_encode(array("title" => $title, 
 					"link" => $article_link,
 					"id" => $id,
