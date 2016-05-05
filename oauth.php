@@ -20,6 +20,6 @@ $result =  file_get_contents (
 		  $context);
 // Is there a better way to isolate this from the ugly string returned from Wallabag?
 $wallabag_access_token = substr($result, 17, 86);
-// Uncomment the next line in order to make use of the refresh token.
+// Uncomment the next line in order to expose the refresh token.
 // $refresh_token = substr($result, 175, 86);
 ?>
