@@ -7,20 +7,20 @@ This plugin is designed to login via Oauth work with the Wallabag v 2.x api.
 
 # Installing the plugin:
 
-Copy this repo into the plugins.local folder of your ttrss:
+1. Copy this repo into the plugins.local folder of your ttrss:
 
-1.     cp /path/to/ttrss-wallabag-plugin /path/to/tinyrss/plugins.local/wallabag_v2
+     cp /path/to/ttrss-wallabag-plugin /path/to/tinyrss/plugins.local/wallabag_v2
 
-You'll also need to restart the application for changes to take place. 
+2. You'll also need to restart the application for changes to take place. 
 If you're running something like php-fpm:
 
-2.a     sudo service php5-fpm restart
+     sudo service php5-fpm restart
 
 Optionally just restart your webserver. In apache:
 
-2.b	sudo service apache2 restart
+    	sudo service apache2 restart
 
-# Getting the Oauth Token
+3. Getting the Oauth Token
 
 Generate an Oath client id and client secret in Wallabag to use with TT-Rss, and simply fill in the details in the pref's dialogue in TTRSS for this plugin.
 
