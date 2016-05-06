@@ -5,7 +5,7 @@ function postArticleToWallabag(id) {
 	xhr.onreadystatechange = function() {
 	    if (xhr.readyState == 4) {
 		if (xhr.status == 200) {
-		    new Ajax.Request(ti.wallabag_url + "api/entries.json" + "Authorization:Bearer" + ti.access_token + "url" + btoa(ti.link.strp()), {
+		    new Ajax.Request(ti.wallabag_url + "api/entries.json" + "Authorization:Bearer" + ti.access_token + "url=" + btoa(ti.link.strp()), {
 			method: 'post',
 			// here comes the CORS fix
 			// courtesy of: http://stackoverflow.com/questions/13814739/prototype-ajax-request-being-sent-as-options-rather-than-get-results-in-501-err/15300045#15300045
