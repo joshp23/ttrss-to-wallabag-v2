@@ -1,10 +1,9 @@
 <?php
 class Wallabag_v2 extends Plugin {
-	
 	private $host;
 
 	function about() {
-		return array(.01,
+		return array(1.0,
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -112,18 +111,36 @@ class Wallabag_v2 extends Plugin {
 		$wallabag_password = $this->host->get($this, "wallabag_password");
 	        $wallabag_client_id = $this->host->get($this, "wallabag_client_id");
 	        $wallabag_client_secret = $this->host->get($this, "wallabag_client_secret");
-	        
+
 		include 'oauth.php';
 
-		print json_encode(array("title" => $title, 
-					"link" => $article_link,
-					"id" => $id,
-					"wallabag_url" => $wallabag_url,
+		if (function_exists('curl_init')) {
+	 		 $postfields = array(
+			 	'access_token' => $wallabag_access_token,
+				'url'          => $article_link
+				);
+			 $cURL = curl_init();
+			 curl_setopt($cURL, CURLOPT_URL, $wallabag_api);
+			 curl_setopt($cURL, CURLOPT_HEADER, 1);
+			 curl_setopt($cURL, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
+			 curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
+			 curl_setopt($cURL, CURLOPT_TIMEOUT, 5);
+			 curl_setopt($cURL, CURLOPT_POST, 4);
+			 curl_setopt($cURL, CURLOPT_POSTFIELDS, http_build_query($postfields));
+			 $apicall = curl_exec($cURL);
+			 $status = curl_getinfo($cURL, CURLINFO_HTTP_CODE);
+			 curl_close($cURL);
+		} else {
+			 $status = 'For the plugin to work you need to <strong>enable PHP extension CURL</strong>!';
+			}
+
+		print json_encode(array("wallabag_url" => $wallabag_url,
 					"wallabag_username" => $wallabag_username,
 					"wallabag_password" => $wallabag_password,
 					"wallabag_client_id" => $wallabag_client_id,
 					"wallabag_client_secret" => $wallabag_client_secret,
-					"wallabag_access_token" => $wallabag_access_token));
+					"title" => $title,
+					"status" => $status));
 	}
 
 	function api_version() {
