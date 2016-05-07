@@ -1,4 +1,4 @@
-Wallabag v2: A TT-Rss to Wallabag v 2.x plugin - v .01
+Wallabag v2: A TT-Rss to Wallabag v 2.x plugin - v 1.0
 =====================
 
 A Wallabag v 2.x plugin for Tiny-Tiny-RSS designed to login via Oauth and work with the Wallabag v 2.x api.
@@ -20,11 +20,18 @@ A Wallabag v 2.x plugin for Tiny-Tiny-RSS designed to login via Oauth and work w
 	sudo service apache2 restart
 	```
 
-3. Getting the Oauth Token
+3. Getting the Oauth Token/Configuration
 
-     Generate an Oath client id and client secret in Wallabag to use with TT-Rss, and simply fill in the details in the pref's dialogue in TTRSS for this plugin.
+     In Wallabag: Create a new Oath client in the Developer tab, take note of the client id and client secret.
+     In TT-Rss: Enable the plugin and simply fill in the details in the Wallabag V2 Preferences dialogue.
 
+4. Enjoy posting directly to Wallabag with 1-click
 
+### ToDo ... which may or not actually ever get done...
+
+1. Enable use of the refresh token
+2. Fine tune error messages
+3. Add tag support
 
 # Helpfull Links:
 
