@@ -32,10 +32,19 @@ A Wallabag v 2.x plugin for Tiny-Tiny-RSS designed to login via Oauth and work w
 1. Enable use of the refresh token
 2. Fine tune error messages
 3. Add tag support
+4. Add hotkey support
+5. Add colour changing button
 
-# Helpfull Links:
+### Helpfull Links:
 
 * [Official TT-RSS Plugin Documentation](https://tt-rss.org/gitlab/fox/tt-rss/wikis/Plugins)
 * [Official Wallabag Documentation](http://doc.wallabag.org/en/v2/)
 * [Wallabag on GitHub](https://github.com/wallabag/wallabag)
 * [Wallabag Home Page](https://www.wallabag.org/)
+
+### Credits
+
+Code for this project exists because of:
+
+* [fxneumann's OneClickPocket plugin for TTRSS](https://github.com/fxneumann/oneclickpocket)
+* [xppppp's Wallabag v1 plugin for TTRSS](https://github.com/xppppp/ttrss-wallabag-plugin)
