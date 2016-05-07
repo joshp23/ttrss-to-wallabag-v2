@@ -22,4 +22,6 @@ $result =  file_get_contents (
 $wallabag_access_token = substr($result, 17, 86);
 // Uncomment the next line in order to expose the refresh token.
 // $refresh_token = substr($result, 175, 86);
+// Set the api endpoint for use later
+$wallabag_api = $wallabag_url . '/api/entries.json';
 ?>
