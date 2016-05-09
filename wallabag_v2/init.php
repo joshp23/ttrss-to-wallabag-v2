@@ -64,7 +64,7 @@ class Wallabag_v2 extends Plugin {
 		print "<input dojoType=\"dijit.form.TextBox\" style=\"display : none\" name=\"method\" value=\"save\">";
 		print "<input dojoType=\"dijit.form.TextBox\" style=\"display : none\" name=\"plugin\" value=\"wallabag_v2\">";
 		print "<table width=\"100%\" class=\"prefPrefsList\">";
-		print "<tr><td width=\"40%\">".__("Wallabag URL")."</td>";
+		print "<tr><td width=\"40%\">".__("Wallabag URL - Note: Do not add a trailing slash.")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" required=\"true\" name=\"wallabag_url\" regExp='^(http|https)://.*' value=\"$w_url\"></td></tr>";
 		print "<tr><td width=\"40%\">".__("Wallabag Username")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_username\" regExp='\w{0,64}' value=\"$w_user\"></td></tr>";
