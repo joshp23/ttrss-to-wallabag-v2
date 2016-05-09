@@ -24,6 +24,8 @@ A Wallabag v 2.x plugin for Tiny-Tiny-RSS designed to login via Oauth and work w
 
      In Wallabag: Create a new Oath client in the Developer tab, take note of the client id and client secret.
      In TT-Rss: Enable the plugin and simply fill in the details in the Wallabag V2 Preferences dialogue.
+     	
+     	Special Note: Do not add a trailing slash to any URL (either Wallabag or TT-RSS) in any setting or you will get nothing but 404 responses!
 
 4. Enjoy posting directly to Wallabag with 1-click
 
