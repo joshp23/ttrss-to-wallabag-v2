@@ -69,7 +69,7 @@ class Wallabag_v2 extends Plugin {
 		print "<tr><td width=\"40%\">".__("Wallabag Username")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_username\" regExp='\w{0,64}' value=\"$w_user\"></td></tr>";
 		print "<tr><td width=\"40%\">".__("Wallabag Password")."</td>";
-		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_password\" regExp='.{0,64}' value=\"$w_pass\"></td></tr>";
+		print "<td class=\"prefValue\"><input type=\"password\" dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_password\" regExp='.{0,64}' value=\"$w_pass\"></td></tr>";
 		print "<tr><td width=\"40%\">".__("Wallabag Cient ID")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_client_id\" regExp='.{0,64}' value=\"$w_cid\"></td></tr>";
 		print "<tr><td width=\"40%\">".__("Wallabag Cient Secret")."</td>";
