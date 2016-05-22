@@ -1,4 +1,4 @@
-Wallabag v2: A TT-Rss to Wallabag v 2.x plugin - v 1.0
+Wallabag v2: A TT-Rss to Wallabag v 2.x plugin - v 1.01
 =====================
 
 A Wallabag v 2.x plugin for Tiny-Tiny-RSS designed to login via Oauth and work with the Wallabag v 2.x api.
