@@ -86,7 +86,7 @@ class Wallabag_v2 extends Plugin {
 	function hook_article_button($line) {
 		$article_id = $line["id"];
 
-		$rv = "<img id=\"wallabagImgId\" src=\"plugins.local/wallabag_v2/wallabag.png\"
+		$rv = "<img id=\"wallabagImgId\" src=\"plugins/wallabag_v2/wallabag.png\"
 			class='tagsPic' style=\"cursor : pointer\"
 			onclick=\"postArticleToWallabag($article_id)\"
 			title='".__('Wallabag v2')."'>";
