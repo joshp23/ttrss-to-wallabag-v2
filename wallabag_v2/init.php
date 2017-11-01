@@ -16,11 +16,11 @@ class Wallabag_v2 extends Plugin {
 	}
 
 	function save() {
-	    $wallabag_url = db_escape_string($_POST["wallabag_url"]);
-	    $wallabag_username = db_escape_string($_POST["wallabag_username"]);
-	    $wallabag_password = db_escape_string($_POST["wallabag_password"]);
-	    $wallabag_client_id = db_escape_string($_POST["wallabag_client_id"]);
-	    $wallabag_client_secret = db_escape_string($_POST["wallabag_client_secret"]);
+	    $wallabag_url = $_POST["wallabag_url"];
+	    $wallabag_username = $_POST["wallabag_username"];
+	    $wallabag_password = $_POST["wallabag_password"];
+	    $wallabag_client_id = $_POST["wallabag_client_id"];
+	    $wallabag_client_secret = $_POST["wallabag_client_secret"];
 	    $this->host->set($this, "wallabag_url", $wallabag_url);
 	    $this->host->set($this, "wallabag_username", $wallabag_username);
 	    $this->host->set($this, "wallabag_password", $wallabag_password);
