@@ -3,7 +3,7 @@ class Wallabag_v2 extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.0.2",
+		return array("1.0.4",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -95,22 +95,24 @@ class Wallabag_v2 extends Plugin {
 	}
 
 	function getwallabagInfo() {
-		$id = db_escape_string($_REQUEST['id']);
+		$id = $_REQUEST['id'];
 
-		$result = db_query("SELECT title, link
-				FROM ttrss_entries, ttrss_user_entries
-				WHERE id = '$id' AND ref_id = id AND owner_uid = " .$_SESSION['uid']);
+		$sth = $this->pdo->prepare("SELECT title, link 
+									FROM ttrss_entries, ttrss_user_entries 
+									WHERE id = ? AND ref_id = id  AND owner_uid = ?");
+		$sth->execute([$id, $_SESSION['uid']]);
 
-		if (db_num_rows($result) != 0) {
-			$title = truncate_string(strip_tags(db_fetch_result($result, 0, 'title')),
-				100, '...');
-			$article_link = db_fetch_result($result, 0, 'link');
+		if ($row = $sth->fetch()) {
+			$title = truncate_string(strip_tags($row['title']), 100, '...');
+			$article_link = $row['link'];
 		}
+
+
 		$wallabag_url = $this->host->get($this, "wallabag_url");
 		$wallabag_username = $this->host->get($this, "wallabag_username");
 		$wallabag_password = $this->host->get($this, "wallabag_password");
-	        $wallabag_client_id = $this->host->get($this, "wallabag_client_id");
-	        $wallabag_client_secret = $this->host->get($this, "wallabag_client_secret");
+		$wallabag_client_id = $this->host->get($this, "wallabag_client_id");
+		$wallabag_client_secret = $this->host->get($this, "wallabag_client_secret");
 
 		include 'oauth.php';
 
