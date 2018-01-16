@@ -10,11 +10,7 @@ function postArticleToWallabag(id) {
 				},
 				onSuccess: function(transport) {
 					var ti = JSON.parse(transport.responseText);
-						if (ti.wallabag_url && ti.wallabag_url.length &&
-							ti.wallabag_username && ti.wallabag_username.length &&
-							ti.wallabag_password && ti.wallabag_password.length &&
-							ti.wallabag_client_id && ti.wallabag_client_id.length &&
-							ti.wallabag_client_secret && ti.wallabag_client_secret.length) {
+						if (ti.status) {
 								if (ti.status=="200") {
 									notify_info("Saved to Wallabag: <em>" + ti.title + "</em>");
 								} else {
