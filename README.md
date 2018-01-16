@@ -16,10 +16,9 @@ A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https
 4. Enjoy 1-click posting to Wallabag!
 
 ### TODO ... which may or not actually ever get done...
-1. Fine tune error messages (currently somewhat possible by uncommenting debug lines in `init.php`)
-2. Add tag support
-3. Add hotkey support
-4. Add colour changing button
+1. Add tag support
+2. Add hotkey support
+3. Add colour changing button
 
 ### Helpfull Links:
 * [Official TT-RSS Plugin Documentation](https://tt-rss.org/gitlab/fox/tt-rss/wikis/Plugins)
