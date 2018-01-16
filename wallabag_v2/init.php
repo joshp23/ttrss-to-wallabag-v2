@@ -3,7 +3,7 @@ class Wallabag_v2 extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.1.0",
+		return array("1.2.0",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -62,18 +62,18 @@ class Wallabag_v2 extends Plugin {
 		print "<input dojoType=\"dijit.form.TextBox\" style=\"display : none\" name=\"method\" value=\"save\">";
 		print "<input dojoType=\"dijit.form.TextBox\" style=\"display : none\" name=\"plugin\" value=\"wallabag_v2\">";
 		print "<table width=\"100%\" class=\"prefPrefsList\">";
-		print "<tr><td width=\"40%\">".__("Wallabag URL - Note: Do not add a trailing slash.")."</td>";
+		print "<tr><td width=\"40%\">".__("Wallabag URL (No trailing slash!)")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" required=\"true\" name=\"wallabag_url\" regExp='^(http|https)://.*' value=\"$w_url\"></td></tr>";
-		print "<tr><td width=\"40%\">".__("Wallabag Username")."</td>";
+		print "<tr><td width=\"40%\">".__("Wallabag Username (Deleted after first request)")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_username\" regExp='\w{0,64}' value=\"$w_user\"></td></tr>";
-		print "<tr><td width=\"40%\">".__("Wallabag Password")."</td>";
+		print "<tr><td width=\"40%\">".__("Wallabag Password (Deleted after first request)")."</td>";
 		print "<td class=\"prefValue\"><input type=\"password\" dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_password\" regExp='.{0,64}' value=\"$w_pass\"></td></tr>";
 		print "<tr><td width=\"40%\">".__("Wallabag Client ID")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_client_id\" regExp='.{0,64}' value=\"$w_cid\"></td></tr>";
 		print "<tr><td width=\"40%\">".__("Wallabag Client Secret")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_client_secret\" regExp='.{0,64}' value=\"$w_csec\"></td></tr>";
 		print "</table>";
-		print "<p><button dojoType=\"dijit.form.Button\" type=\"submit\">".__("Save")."</button>";
+		print "<p><button dojoType=\"dijit.form.Button\" type=\"submit\">".__("Save")."</button> Re-submitting this form resets the Wallabag OAuth Tokens. You must re-enter your Wallabag username and password every time you press save!";
 		print "</form>";
 		print "</div>"; #pane
 	}
@@ -110,7 +110,7 @@ class Wallabag_v2 extends Plugin {
 			$w_access = $this->host->get($this, "wallabag_access_token");
 			$old_timeout = $this->host->get($this, "wallabag_access_token_timeout");
 			$now = time();
-			//$token_type = "old";
+			$token_type = "old";
 			if($w_access == "new" || $w_access == null || $old_timeout < $now) {
 				if($w_access == "new" || $w_access == null) {
 					$postfields = array(
@@ -120,7 +120,7 @@ class Wallabag_v2 extends Plugin {
 						"password" => $w_pass,
 						"grant_type" => "password"
 					);
-					//$token_type = "new";
+					$token_type = "new";
 				} else { 
 					$w_refresh = $this->host->get($this, "wallabag_refresh_token");
 					$postfields = array(
@@ -129,7 +129,7 @@ class Wallabag_v2 extends Plugin {
 						"refresh_token" => $w_refresh,
 						"grant_type" => "refresh_token"
 					);
-					//$token_type = "refreshed";
+					$token_type = "refreshed";
 				}
 				$OAcURL = curl_init();
 					curl_setopt($OAcURL, CURLOPT_URL, $w_url . '/oauth/v2/token');
@@ -152,6 +152,11 @@ class Wallabag_v2 extends Plugin {
 				$this->host->set($this, "wallabag_access_token", $w_access);
 				$this->host->set($this, "wallabag_access_token_timeout", $new_timeout);
 				$this->host->set($this, "wallabag_refresh_token", $w_refresh);
+
+				if($token_type = "new") {
+					$this->host->set($this, "wallabag_username", "DELETED: Using Tokens");
+					$this->host->set($this, "wallabag_password", "");
+				}
 			}
 
 			$postfields = array(

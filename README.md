@@ -1,6 +1,6 @@
-Wallabag v2: A TT-Rss to Wallabag v 2.x plugin
+Wallabag v2: A TT-RSS to Wallabag v2 plugin
 =====================
-A Wallabag v 2.x plugin for Tiny-Tiny-RSS designed to login via Oauth and work with the Wallabag v 2.x api.
+A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https://www.wallabag.org/) instance.
 
 ### Installing the plugin:
 1. Clone this repo or just grab the [latest release](https://github.com/joshp23/ttrss-to-wallabag-v2/releases/latest) and extract the wallabag_v2 folder into the `plugins.local` folder of ttrss:  
@@ -24,8 +24,6 @@ A Wallabag v 2.x plugin for Tiny-Tiny-RSS designed to login via Oauth and work w
 ### Helpfull Links:
 * [Official TT-RSS Plugin Documentation](https://tt-rss.org/gitlab/fox/tt-rss/wikis/Plugins)
 * [Official Wallabag Documentation](http://doc.wallabag.org/en/v2/)
-* [Wallabag on GitHub](https://github.com/wallabag/wallabag)
-* [Wallabag Home Page](https://www.wallabag.org/)
 
 ### Credits
 Code for this project exists because of:
