@@ -3,7 +3,7 @@ class Wallabag_v2 extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.3.0",
+		return array("1.3.1",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -154,17 +154,10 @@ class Wallabag_v2 extends Plugin {
 			$w_access = $this->host->get($this, "wallabag_access_token");
 			$old_timeout = $this->host->get($this, "wallabag_access_token_timeout");
 			$now = time();
-			//$token_type = "old";
-			if($w_access == null || $old_timeout < $now) {
-				if($w_access == null) {
-					print json_encode(array("wallabag_url" => $w_url,
-											"title" => $title,
-										 	"error" => "oauth",
-											"error_msg" => "No access token",
-											"access_token" => "Go to preferences and set up the plugin.",
-											"status" => 401
-											));
-				} else { 
+			if($w_access !== null) {
+				//$token_type = "old";
+				if( $old_timeout < $now ) {
+					//$token_type = "refreshed";
 					$w_refresh = $this->host->get($this, "wallabag_refresh_token");
 					$postfields = array(
 						"client_id" => $w_cid,
@@ -172,59 +165,75 @@ class Wallabag_v2 extends Plugin {
 						"refresh_token" => $w_refresh,
 						"grant_type" => "refresh_token"
 					);
-					//$token_type = "refreshed";
+					$OAcURL = curl_init();
+						curl_setopt($OAcURL, CURLOPT_URL, $w_url . '/oauth/v2/token');
+						curl_setopt($OAcURL, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
+						curl_setopt($OAcURL, CURLOPT_RETURNTRANSFER, true);
+						curl_setopt($OAcURL, CURLOPT_POST, true);
+						curl_setopt($OAcURL, CURLOPT_SSL_VERIFYPEER, false);
+						curl_setopt($OAcURL, CURLOPT_POSTFIELDS, http_build_query($postfields));
+					$OAresult = curl_exec($OAcURL);
+					$new_timeout =  time() + 3600;
+						curl_close($OAcURL);
+
+					$OAresult = json_decode($OAresult,true);
+
+					$w_access = $OAresult["access_token"];
+					$w_refresh = $OAresult["refresh_token"];
+					//$w_auth_error = $OAresult["error"];
+					//$w_auth_error_msg = $OAresult["error_description"];
+
+					$this->host->set($this, "wallabag_access_token", $w_access);
+					$this->host->set($this, "wallabag_access_token_timeout", $new_timeout);
+					$this->host->set($this, "wallabag_refresh_token", $w_refresh);
 				}
-				$OAcURL = curl_init();
-					curl_setopt($OAcURL, CURLOPT_URL, $w_url . '/oauth/v2/token');
-					curl_setopt($OAcURL, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
-					curl_setopt($OAcURL, CURLOPT_RETURNTRANSFER, true);
-					curl_setopt($OAcURL, CURLOPT_POST, true);
-					curl_setopt($OAcURL, CURLOPT_SSL_VERIFYPEER, false);
-					curl_setopt($OAcURL, CURLOPT_POSTFIELDS, http_build_query($postfields));
-				$OAresult = curl_exec($OAcURL);
-				$new_timeout =  time() + 3600;
-					curl_close($OAcURL);
 
-				$OAresult = json_decode($OAresult,true);
+				$postfields = array(
+					'access_token' => $w_access,
+					'url'          => $article_link
+				);
 
-				$w_access = $OAresult["access_token"];
-				$w_refresh = $OAresult["refresh_token"];
-				$w_error = $OAresult["error"];
-				$w_error_msg = $OAresult["error_description"];
+				$cURL = curl_init();
+					curl_setopt($cURL, CURLOPT_URL, $w_url.'/api/entries.json');
+					curl_setopt($cURL, CURLOPT_HEADER, 1);
+					curl_setopt($cURL, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
+					curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
+					curl_setopt($cURL, CURLOPT_TIMEOUT, 5);
+					curl_setopt($cURL, CURLOPT_POST, 4);
+					curl_setopt($cURL, CURLOPT_POSTFIELDS, http_build_query($postfields));
+				$apicall = curl_exec($cURL);
+				$status = curl_getinfo($cURL, CURLINFO_HTTP_CODE);
+					curl_close($cURL);
 
-				$this->host->set($this, "wallabag_access_token", $w_access);
-				$this->host->set($this, "wallabag_access_token_timeout", $new_timeout);
-				$this->host->set($this, "wallabag_refresh_token", $w_refresh);
-			}
+				//$w_debug = json_decode($apicall,true);
+				//$w_debug_error = $w_debug["error"];
+				//$w_debug_error_msg = $w_debug["error_description"];
 
-			$postfields = array(
-				'access_token' => $w_access,
-				'url'          => $article_link
-			);
-			$cURL = curl_init();
-				curl_setopt($cURL, CURLOPT_URL, $w_url.'/api/entries.json');
-				curl_setopt($cURL, CURLOPT_HEADER, 1);
-				curl_setopt($cURL, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
-				curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
-				curl_setopt($cURL, CURLOPT_TIMEOUT, 5);
-				curl_setopt($cURL, CURLOPT_POST, 4);
-				curl_setopt($cURL, CURLOPT_POSTFIELDS, http_build_query($postfields));
-			$apicall = curl_exec($cURL);
-			$status = curl_getinfo($cURL, CURLINFO_HTTP_CODE);
-				curl_close($cURL);
-		} else {
-			 $status = 'For the plugin to work you need to <strong>enable PHP extension CURL</strong>!';
-			}
-
-		print json_encode(array("wallabag_url" => $w_url,
+				$result = array("wallabag_url" => $w_url,
 								"title" => $title,
-							/* 	"error" => $w_error,
-								"error_msg" => $w_error_msg,
+							/* 	"auth_error" => $w_auth_error,
+								"auth_error_msg" => $w_auth_error_msg,
+								"error" => $w_debug_error,
+								"error_msg" => $w_debug_error_msg,
 								"refresh_token" => $w_refresh,
 								"access_token" => $w_access,
 								"auth_type" => $token_type, */
 								"status" => $status
-								));
+								);
+
+			} else {
+				$result = array("wallabag_url" => $w_url,
+								"title" => $title,
+							 	"error" => "oauth",
+								"error_msg" => "No access token",
+								"access_token" => "Go to preferences and set up the plugin.",
+								"status" => 401
+								);
+			}
+
+		} else $result['status'] = 'For the plugin to work you need to <strong>enable PHP extension CURL</strong>!';
+
+		print json_encode($result);
 	}
 
 	function api_version() {
