@@ -3,7 +3,7 @@ class Wallabag_v2 extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.3.1",
+		return array("1.3.2",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -198,7 +198,7 @@ class Wallabag_v2 extends Plugin {
 					curl_setopt($cURL, CURLOPT_HEADER, 1);
 					curl_setopt($cURL, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
 					curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
-					curl_setopt($cURL, CURLOPT_TIMEOUT, 5);
+					curl_setopt($cURL, CURLOPT_TIMEOUT, 30);
 					curl_setopt($cURL, CURLOPT_POST, 4);
 					curl_setopt($cURL, CURLOPT_POSTFIELDS, http_build_query($postfields));
 				$apicall = curl_exec($cURL);
