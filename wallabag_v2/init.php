@@ -3,7 +3,7 @@ class Wallabag_v2 extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.3.2",
+		return array("1.3.3",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -33,6 +33,7 @@ class Wallabag_v2 extends Plugin {
 				curl_setopt($cURL, CURLOPT_URL, $w_url . '/oauth/v2/token');
 				curl_setopt($cURL, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
 				curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($cURL, CURLOPT_TIMEOUT, 30);
 				curl_setopt($cURL, CURLOPT_POST, true);
 				curl_setopt($cURL, CURLOPT_SSL_VERIFYPEER, false);
 				curl_setopt($cURL, CURLOPT_POSTFIELDS, http_build_query($postfields));
@@ -169,6 +170,7 @@ class Wallabag_v2 extends Plugin {
 						curl_setopt($OAcURL, CURLOPT_URL, $w_url . '/oauth/v2/token');
 						curl_setopt($OAcURL, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
 						curl_setopt($OAcURL, CURLOPT_RETURNTRANSFER, true);
+						curl_setopt($OAcURL, CURLOPT_TIMEOUT, 30);
 						curl_setopt($OAcURL, CURLOPT_POST, true);
 						curl_setopt($OAcURL, CURLOPT_SSL_VERIFYPEER, false);
 						curl_setopt($OAcURL, CURLOPT_POSTFIELDS, http_build_query($postfields));
