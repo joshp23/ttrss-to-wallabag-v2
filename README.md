@@ -15,10 +15,16 @@ A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https
 	Special Note: Do not add trailing slashes to any URLs in either the Wallabag or TT-RSS settings or you will get nothing but 404 responses!
 4. Enjoy 1-click posting to Wallabag!
 
+### Note:
+1. This plugin does not store Wallabag user credentials.
+2. Failed OAuth updates sometimes happen and can only be fixed by re-submitting Username and Password combinations in the plugin preferences.
+3. A file called `debug.txt` will be created in this plugin's directory on error events. This is the same data that will appear in the developer console and is useful when submitting issues or trouble shooting your setup.
+
 ### TODO ... which may or not actually ever get done...
 1. Add tag support
 2. Add hotkey support
 3. Add colour changing button
+4. Add option to store username & password for auth fallback
 
 ### Helpfull Links:
 * [Official TT-RSS Plugin Documentation](https://tt-rss.org/gitlab/fox/tt-rss/wikis/Plugins)

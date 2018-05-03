@@ -14,7 +14,7 @@ function postArticleToWallabag(id) {
 								if (ti.status=="200") {
 									notify_info("Saved to Wallabag: <em>" + ti.title + "</em>");
 								} else {
-									notify_error("<strong>Error saving to Wallabag!</strong>: ("+ti.status+")");
+									notify_error("<strong>Error saving to Wallabag!</strong>: ("+ti.status+": "+ti.error+") "+ti.error_msg+"");
 								}
 						}  else {
 							notify_error("The Wallabag_v2 plugin needs to be configured. See the README for help", true);

@@ -3,7 +3,7 @@ class Wallabag_v2 extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.3.3",
+		return array("1.4.0",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -48,7 +48,6 @@ class Wallabag_v2 extends Plugin {
 			$w_error = $result["error"];
 			$w_error_msg = $result["error_description"];
 
-			$this->host->set($this, "wallabag_username", "DELETED: Using Tokens");
 			$this->host->set($this, "wallabag_access_token", $w_access);
 			$this->host->set($this, "wallabag_access_token_timeout", $timeout);
 			$this->host->set($this, "wallabag_refresh_token", $w_refresh);
@@ -63,15 +62,20 @@ class Wallabag_v2 extends Plugin {
 	    $this->host->set($this, "wallabag_client_secret", $w_cs);
 
 		if($status !== 200){ 
-			print json_encode(array("wallabag_url" => $w_url,
-									"client_id" => $w_cid,
-									"client_secret" => $w_cs,
-								 	"error" => $w_error,
-									"error_msg" => $w_error_msg,
-									"refresh_token" => $w_refresh,
-									"access_token" => $w_access,
-									"status" => $status
-									));
+			// debug data
+			$reult = array(
+						"wallabag_url" => $w_url,
+						"client_id" => $w_cid,
+						"client_secret" => $w_cs,
+					 	"error" => $w_error,
+						"error_msg" => $w_error_msg,
+						"refresh_token" => $w_refresh,
+						"access_token" => $w_access,
+						"status" => $status
+						);
+			$debug_result = json_encode($result);
+			file_put_contents("plugins.local/wallabag_v2/debug.txt", date('Y-m-d H:i:s')."\r\n".$debug_result."\r\n", FILE_APPEND); // debug data
+			print $debug_result;
 		} else {
 			print "Ready to send to Wallabag at $w_url";
 		}
@@ -85,10 +89,9 @@ class Wallabag_v2 extends Plugin {
 		if ($args != "prefPrefs") return;
 
 		$w_url = $this->host->get($this, "wallabag_url");
-		$w_user = $this->host->get($this, "wallabag_username");
-		$w_pass = $this->host->get($this, "wallabag_password");
 		$w_cid = $this->host->get($this, "wallabag_client_id");
 		$w_csec = $this->host->get($this, "wallabag_client_secret");
+		$w_access = $this->host->get($this, "wallabag_access_token");
 
 		 print "<div dojoType=\"dijit.layout.AccordionPane\" title=\"".__("Wallabag v2")."\">";
 		 print "<br/>";
@@ -112,15 +115,20 @@ class Wallabag_v2 extends Plugin {
 		print "<tr><td width=\"40%\">".__("Wallabag URL (No trailing slash!)")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" required=\"true\" name=\"wallabag_url\" regExp='^(http|https)://.*' value=\"$w_url\"></td></tr>";
 		print "<tr><td width=\"40%\">".__("Wallabag Username (Not Stored in Database)")."</td>";
-		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_username\" regExp='\w{0,64}' value=\"$w_user\"></td></tr>";
+		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_username\" regExp='\w{0,64}'></td></tr>";
 		print "<tr><td width=\"40%\">".__("Wallabag Password (Not Stored in Database)")."</td>";
-		print "<td class=\"prefValue\"><input type=\"password\" dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_password\" regExp='.{0,64}' value=\"$w_pass\"></td></tr>";
+		print "<td class=\"prefValue\"><input type=\"password\" dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_password\" regExp='.{0,64}'></td></tr>";
 		print "<tr><td width=\"40%\">".__("Wallabag Client ID")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_client_id\" regExp='.{0,64}' value=\"$w_cid\"></td></tr>";
 		print "<tr><td width=\"40%\">".__("Wallabag Client Secret")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_client_secret\" regExp='.{0,64}' value=\"$w_csec\"></td></tr>";
 		print "</table>";
-		print "<p><button dojoType=\"dijit.form.Button\" type=\"submit\">".__("Save")."</button> Re-submitting this form resets the Wallabag OAuth Tokens. You must re-enter your Wallabag username and password every time you press save!";
+		print "<p><button dojoType=\"dijit.form.Button\" type=\"submit\">".__("Save")."</button>"; 
+		if($w_access == null || $w_access == false|| $w_access == "") {
+			print "<strong style=\"color:red;\">  Alert</strong>: No OAuth tokens in Database! Submit Username and Password to retrieve new tokens.";
+		} else {
+			print "  Submitting this form without a Username and Password resets the Wallabag OAuth Tokens to a null value.";
+		}
 		print "</form>";
 		print "</div>"; #pane
 	}
@@ -155,10 +163,10 @@ class Wallabag_v2 extends Plugin {
 			$w_access = $this->host->get($this, "wallabag_access_token");
 			$old_timeout = $this->host->get($this, "wallabag_access_token_timeout");
 			$now = time();
-			if($w_access !== null) {
-				//$token_type = "old";
+			if($w_access !== null && $w_access !== false && $w_access !== "") {
+				$token_type = "old"; // debug data
 				if( $old_timeout < $now ) {
-					//$token_type = "refreshed";
+					$token_type = "refreshed"; // debug data
 					$w_refresh = $this->host->get($this, "wallabag_refresh_token");
 					$postfields = array(
 						"client_id" => $w_cid,
@@ -175,6 +183,7 @@ class Wallabag_v2 extends Plugin {
 						curl_setopt($OAcURL, CURLOPT_SSL_VERIFYPEER, false);
 						curl_setopt($OAcURL, CURLOPT_POSTFIELDS, http_build_query($postfields));
 					$OAresult = curl_exec($OAcURL);
+					$OAstatus = curl_getinfo($OAcURL, CURLINFO_HTTP_CODE); // debug data
 					$new_timeout =  time() + 3600;
 						curl_close($OAcURL);
 
@@ -182,12 +191,16 @@ class Wallabag_v2 extends Plugin {
 
 					$w_access = $OAresult["access_token"];
 					$w_refresh = $OAresult["refresh_token"];
-					//$w_auth_error = $OAresult["error"];
-					//$w_auth_error_msg = $OAresult["error_description"];
+					$w_auth_error = $OAresult["error"]; // debug data
+					$w_auth_error_msg = $OAresult["error_description"]; // debug data
 
-					$this->host->set($this, "wallabag_access_token", $w_access);
-					$this->host->set($this, "wallabag_access_token_timeout", $new_timeout);
-					$this->host->set($this, "wallabag_refresh_token", $w_refresh);
+					if ($OAstatus == 200) {
+
+						$this->host->set($this, "wallabag_access_token", $w_access);
+						$this->host->set($this, "wallabag_access_token_timeout", $new_timeout);
+						$this->host->set($this, "wallabag_refresh_token", $w_refresh);
+
+					}
 				}
 
 				$postfields = array(
@@ -207,33 +220,51 @@ class Wallabag_v2 extends Plugin {
 				$status = curl_getinfo($cURL, CURLINFO_HTTP_CODE);
 					curl_close($cURL);
 
-				//$w_debug = json_decode($apicall,true);
-				//$w_debug_error = $w_debug["error"];
-				//$w_debug_error_msg = $w_debug["error_description"];
+				if($status == 200){
+					$result = array("wallabag_url" => $w_url,
+									"title" => $title,
+									"status" => $status
+									);
+				} else {
+					// debug data
+					$w_debug = json_decode($apicall,true);
+					$w_debug_error = $w_debug["error"];
+					$w_debug_error_msg = $w_debug["error_description"];
 
-				$result = array("wallabag_url" => $w_url,
-								"title" => $title,
-							/* 	"auth_error" => $w_auth_error,
-								"auth_error_msg" => $w_auth_error_msg,
-								"error" => $w_debug_error,
-								"error_msg" => $w_debug_error_msg,
-								"refresh_token" => $w_refresh,
-								"access_token" => $w_access,
-								"auth_type" => $token_type, */
-								"status" => $status
-								);
+					$result = array("wallabag_url" => $w_url,
+									"title" => $title,
+									"auth_status" => $OAstatus,
+								 	"auth_error" => $w_auth_error,
+									"auth_error_msg" => $w_auth_error_msg,
+									"error" => $w_debug_error,
+									"error_msg" => $w_debug_error_msg,
+									"refresh_token" => $w_refresh,
+									"access_token" => $w_access,
+									"auth_type" => $token_type,
+									"status" => $status
+									);
+
+					$debug_result = json_encode($result); // debug data
+					file_put_contents("plugins.local/wallabag_v2/debug.txt", date('Y-m-d H:i:s')."\r\n".$debug_result."\r\n", FILE_APPEND); // debug data
+				}
 
 			} else {
 				$result = array("wallabag_url" => $w_url,
 								"title" => $title,
 							 	"error" => "oauth",
-								"error_msg" => "No access token",
-								"access_token" => "Go to preferences and set up the plugin.",
+								"error_msg" => "No access token, submit username & passwsord in plugin preferences.",
+								"access_token" => "Missing",
 								"status" => 401
 								);
 			}
 
-		} else $result['status'] = 'For the plugin to work you need to <strong>enable PHP extension CURL</strong>!';
+		} else {
+			$result = array(
+						"status" => 501,
+						"error" => "PEBCAK",
+						"error_msg" => "Please <strong>enable PHP extension CURL</strong>!"
+						);
+		}
 
 		print json_encode($result);
 	}
