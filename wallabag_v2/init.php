@@ -12,7 +12,23 @@ class Wallabag_v2 extends Plugin {
 	function init($host) {
 		$this->host = $host;
 		$host->add_hook($host::HOOK_PREFS_TAB, $this);
-		$host->add_hook($host::HOOK_ARTICLE_BUTTON, $this);
+    $host->add_hook($host::HOOK_ARTICLE_BUTTON, $this);
+    $host->add_hook($host::HOOK_HOTKEY_MAP, $this);
+    $host->add_hook($host::HOOK_HOTKEY_INFO, $this);
+	}
+
+  function hook_hotkey_map($hotkeys) {
+    // Use the new target "open_in_background_tab" to define your own
+    // hotkey to this function in other plugins.
+    $hotkeys['s w'] = 'send_to_wallabag';
+
+    return $hotkeys;
+  }
+
+  function hook_hotkey_info($hotkeys) {
+		$hotkeys[__("Article")]["send_to_wallabag"] = __("Send Article to your Wallabag");
+
+		return $hotkeys;
 	}
 
 	function save() {
@@ -145,7 +161,7 @@ class Wallabag_v2 extends Plugin {
 		$article_id = $line["id"];
 
 		$rv = "<img id=\"wallabagImgId\" src=\"plugins.local/wallabag_v2/wallabag.png\"
-			class='tagsPic' style=\"cursor : pointer\"
+			class='tagsPic' style=\"cursor: pointer; margin-right: 12px;\"
 			onclick=\"postArticleToWallabag($article_id)\"
 			title='".__('Wallabag v2')."'>";
 
