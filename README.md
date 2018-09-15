@@ -21,8 +21,7 @@ A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https
 
 ### TODO ... which may or not actually ever get done...
 1. Add tag support
-2. Add hotkey support
-3. Add colour changing button
+2. Add colour changing button
 
 ### Helpfull Links:
 * [Official TT-RSS Plugin Documentation](https://tt-rss.org/gitlab/fox/tt-rss/wikis/Plugins)
