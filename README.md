@@ -13,7 +13,7 @@ A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https
 	* In TT-RSS: Enable the plugin and simply fill in the details in the Wallabag V2 Preferences dialogue.
 
 	Special Note: Do not add trailing slashes to any URLs in either the Wallabag or TT-RSS settings or you will get nothing but 404 responses!
-4. Enjoy 1-click posting to Wallabag!
+4. Enjoy 1-click posting to Wallabag! (Use _Hotkeys!_ S + W )
 
 ### Note:
 1. This plugin stores and sends Wallabag user credentials to obtain initial OAuth tokens and fetch new refresh tokens every 2 weeks as needed.
