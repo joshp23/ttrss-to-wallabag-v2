@@ -25,3 +25,10 @@ function postArticleToWallabag(id) {
 		exception_error("wallabagArticle", e);
     }
 }
+
+hotkey_actions['send_to_wallabag'] = function() {
+  if (getActiveArticleId()) {
+    postArticleToWallabag(getActiveArticleId());
+    return;
+  }
+};
