@@ -1,23 +1,23 @@
 function postArticleToWallabag(id) {
     try {
-		notify_progress("Saving to Wallabag …", true);
+		Notify.progress("Saving to Wallabag …", true);
 		new Ajax.Request("backend.php",	{
 				parameters: {
 					'op': 'pluginhandler',
 					'plugin': 'wallabag_v2',
 					'method': 'getwallabagInfo',
-					'id': param_escape(id)
+					'id': encodeURIComponent(id)
 				},
 				onSuccess: function(transport) {
 					var ti = JSON.parse(transport.responseText);
 						if (ti.status) {
 								if (ti.status=="200") {
-									notify_info("Saved to Wallabag: <em>" + ti.title + "</em>");
+									Notify.info("Saved to Wallabag: <em>" + ti.title + "</em>");
 								} else {
-									notify_error("<strong>Error saving to Wallabag!</strong>: ("+ti.status+": "+ti.error+") "+ti.error_msg+"");
+									Notify.error("<strong>Error saving to Wallabag!</strong>: ("+ti.status+": "+ti.error+") "+ti.error_msg+"");
 								}
 						}  else {
-							notify_error("The Wallabag_v2 plugin needs to be configured. See the README for help", true);
+							Notify.error("The Wallabag_v2 plugin needs to be configured. See the README for help", true);
 						}
 				}
 		});
@@ -26,9 +26,16 @@ function postArticleToWallabag(id) {
     }
 }
 
-hotkey_actions['send_to_wallabag'] = function() {
-  if (getActiveArticleId()) {
-    postArticleToWallabag(getActiveArticleId());
-    return;
-  }
-};
+require(['dojo/_base/kernel', 'dojo/ready'], function (dojo, ready) {
+	ready(function () {
+		PluginHost.register(PluginHost.HOOK_INIT_COMPLETE, () => {
+			App.hotkey_actions["send_to_wallabag"]  = function() {
+			  if (Article.getActive()) {
+				postArticleToWallabag(Article.getActive());
+				return;
+			  }
+			};
+		});
+	});
+});
+
