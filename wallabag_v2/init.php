@@ -4,7 +4,7 @@ class Wallabag_v2 extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.7.0",
+		return array("1.7.1",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -161,7 +161,7 @@ class Wallabag_v2 extends Plugin {
 		$article_id = $line["id"];
 
 		$rv = "<img id=\"wallabagImgId\" src=\"plugins.local/wallabag_v2/wallabag.png\"
-			class='tagsPic' style=\"cursor: pointer; margin-right: 12px;\"
+			class='tagsPic' style=\"cursor: pointer;\"
 			onclick=\"postArticleToWallabag($article_id)\"
 			title='".__('Wallabag v2')."'>";
 
