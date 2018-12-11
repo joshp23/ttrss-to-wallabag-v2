@@ -4,7 +4,7 @@ class Wallabag_v2 extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.7.1",
+		return array("1.8.0",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -117,7 +117,8 @@ class Wallabag_v2 extends Plugin {
 		$w_csec = $this->host->get($this, "wallabag_client_secret");
 		$w_access = $this->host->get($this, "wallabag_access_token");
 
-		 print "<div dojoType=\"dijit.layout.AccordionPane\" title=\"".__("Wallabag v2")."\">";
+		 print "<div dojoType=\"dijit.layout.AccordionPane\" 
+					title=\" <i class='material-icons'>share</i> ".__("Wallabag v2")."\">";
 		 print "<br/>";
 		 print "<form dojoType=\"dijit.form.Form\">";
 		 print "<script type=\"dojo/method\" event=\"onSubmit\" args=\"evt\">
