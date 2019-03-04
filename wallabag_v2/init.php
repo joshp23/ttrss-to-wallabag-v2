@@ -4,7 +4,7 @@ class Wallabag_v2 extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.8.0",
+		return array("1.8.1",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -20,7 +20,7 @@ class Wallabag_v2 extends Plugin {
   function hook_hotkey_map($hotkeys) {
     // Use the new target "open_in_background_tab" to define your own
     // hotkey to this function in other plugins.
-    $hotkeys['s w'] = 'send_to_wallabag';
+    $hotkeys['a w'] = 'send_to_wallabag';
 
     return $hotkeys;
   }
