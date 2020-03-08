@@ -1,6 +1,6 @@
 Wallabag v2: A TT-RSS to Wallabag v2 plugin
 =====================
-A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https://www.wallabag.org/) instance.
+A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https://www.wallabag.org/) instance manually or automatically via content filters.
 
 ### Installing the plugin:
 1. Clone this repo or just grab the [latest release](https://github.com/joshp23/ttrss-to-wallabag-v2/releases/latest) and extract the wallabag_v2 folder into the `plugins.local` folder of ttrss:  
@@ -14,6 +14,7 @@ A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https
 
 	Special Note: Do not add trailing slashes to any URLs in either the Wallabag or TT-RSS settings or you will get nothing but 404 responses!
 4. Enjoy 1-click posting to Wallabag! (Use _Hotkeys!_ S + W )
+5. Optional: Set [Content Filters](https://tt-rss.org/wiki/ContentFilters) in TT-RSS for automatic article sending to Wallabag. 
 
 ### Note:
 1. This plugin stores and sends Wallabag user credentials to obtain initial OAuth tokens and fetch new refresh tokens every 2 weeks as needed.

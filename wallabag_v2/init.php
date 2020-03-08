@@ -4,7 +4,7 @@ class Wallabag_v2 extends Plugin {
 	private $host;
 
 	function about() {
-		return array("1.8.1",
+		return array("1.9.0",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -12,31 +12,29 @@ class Wallabag_v2 extends Plugin {
 	function init($host) {
 		$this->host = $host;
 		$host->add_hook($host::HOOK_PREFS_TAB, $this);
-    $host->add_hook($host::HOOK_ARTICLE_BUTTON, $this);
-    $host->add_hook($host::HOOK_HOTKEY_MAP, $this);
-    $host->add_hook($host::HOOK_HOTKEY_INFO, $this);
+		$host->add_hook($host::HOOK_ARTICLE_BUTTON, $this);
+		$host->add_hook($host::HOOK_HOTKEY_MAP, $this);
+		$host->add_hook($host::HOOK_HOTKEY_INFO, $this);
+		$host->add_hook($host::HOOK_ARTICLE_FILTER_ACTION, $this);
+		$host->add_filter_action($this, "wallabag_v2_send_to_Wallabag", "Send to Wallabag");
 	}
 
-  function hook_hotkey_map($hotkeys) {
-    // Use the new target "open_in_background_tab" to define your own
-    // hotkey to this function in other plugins.
-    $hotkeys['a w'] = 'send_to_wallabag';
+	function hook_hotkey_map($hotkeys) {
+		$hotkeys['a w'] = 'send_to_wallabag';
+		return $hotkeys;
+	}
 
-    return $hotkeys;
-  }
-
-  function hook_hotkey_info($hotkeys) {
-		$hotkeys[__("Article")]["send_to_wallabag"] = __("Send Article to your Wallabag");
-
+	function hook_hotkey_info($hotkeys) {
+		$hotkeys[__("Article")]['send_to_wallabag'] = __("Send Article to your Wallabag");
 		return $hotkeys;
 	}
 
 	function save() {
-	    $w_url = $_POST["wallabag_url"];
-	    $w_user = $_POST["wallabag_username"];
-	    $w_pass = $_POST["wallabag_password"];
-	    $w_cid = $_POST["wallabag_client_id"];
-	    $w_cs = $_POST["wallabag_client_secret"];
+	    $w_url = $_POST['wallabag_url'];
+	    $w_user = $_POST['wallabag_username'];
+	    $w_pass = $_POST['wallabag_password'];
+	    $w_cid = $_POST['wallabag_client_id'];
+	    $w_cs = $_POST['wallabag_client_secret'];
 
 		if (function_exists('curl_init')) {
 			$postfields = array(
@@ -61,10 +59,10 @@ class Wallabag_v2 extends Plugin {
 				curl_close($cURL);
 			$result = json_decode($result,true);
 
-			$w_access = $result["access_token"];
-			$w_refresh = $result["refresh_token"];
-			$w_error = $result["error"];
-			$w_error_msg = $result["error_description"];
+			$w_access = $result['access_token'];
+			$w_refresh = $result['refresh_token'];
+			$w_error = $result['error'];
+			$w_error_msg = $result['error_description'];
 
 			$this->host->set($this, "wallabag_access_token", $w_access);
 			$this->host->set($this, "wallabag_access_token_timeout", $aTimeout);
@@ -95,7 +93,7 @@ class Wallabag_v2 extends Plugin {
 							"status" 		=> $status
 							);
 				$debug_result = json_encode($result);
-				file_put_contents("plugins.local/wallabag_v2/debug.txt", date('Y-m-d H:i:s')."\r\n".$debug_result."\r\n", FILE_APPEND);
+				file_put_contents("plugins.local/wallabag_v2/debug.txt", date('Y-m-d H:i:s')."\r\n".$debug_result."\r\nPREFS\r\n", FILE_APPEND);
 				print $debug_result;
 			} else 
 				print "Error Saving Prefs. Try again.";
@@ -122,17 +120,17 @@ class Wallabag_v2 extends Plugin {
 		 print "<br/>";
 		 print "<form dojoType=\"dijit.form.Form\">";
 		 print "<script type=\"dojo/method\" event=\"onSubmit\" args=\"evt\">
-	   evt.preventDefault();
-           if (this.validate()) {
-               console.log(dojo.objectToQuery(this.getValues()));
-               new Ajax.Request('backend.php', {
-                                    parameters: dojo.objectToQuery(this.getValues()),
-                                    onComplete: function(transport) {
-                                         notify_info(transport.responseText);
-                                    }
-                                });
-           }
-           </script>";
+				   evt.preventDefault();
+					   if (this.validate()) {
+						   console.log(dojo.objectToQuery(this.getValues()));
+						   new Ajax.Request('backend.php', {
+						                        parameters: dojo.objectToQuery(this.getValues()),
+						                        onComplete: function(transport) {
+						                             notify_info(transport.responseText);
+						                        }
+						                    });
+					   }
+			   </script>";
 		print "<input dojoType=\"dijit.form.TextBox\" style=\"display : none\" name=\"op\" value=\"pluginhandler\">";
 		print "<input dojoType=\"dijit.form.TextBox\" style=\"display : none\" name=\"method\" value=\"save\">";
 		print "<input dojoType=\"dijit.form.TextBox\" style=\"display : none\" name=\"plugin\" value=\"wallabag_v2\">";
@@ -159,7 +157,7 @@ class Wallabag_v2 extends Plugin {
 	}
 
 	function hook_article_button($line) {
-		$article_id = $line["id"];
+		$article_id = $line['id'];
 
 		$rv = "<img id=\"wallabagImgId\" src=\"plugins.local/wallabag_v2/wallabag.png\"
 			class='tagsPic' style=\"cursor: pointer;\"
@@ -180,6 +178,37 @@ class Wallabag_v2 extends Plugin {
 			$article_link = $row['link'];
 		}
 
+		$source = 'button';		
+		$result = $this->_send( $title, $article_link, $source );
+
+		print $result;
+	}
+
+	function hook_article_filter_action($article, $action) {
+
+		if ( $action == 'wallabag_v2_send_to_Wallabag' ) {
+
+			$tags = (is_array($article['tags'])) ? array_flip($article['tags']) : array();
+
+			if ( !isset( $tags['w_v2'] ) ) {
+	
+				$source = 'filter';
+				$title = truncate_string(strip_tags($article['title']), 100, '...');
+				$article_link = $article['link'];
+
+				$this->_send( $title, $article_link, $source );
+
+				$tags = array_keys( $tags );
+				$tags[] = 'w_v2';
+				$article['tags'] = $tags;
+			}
+		}
+
+		return $article;
+	}
+
+	private function _send( $title, $article_link, $source ) {
+
 		$w_url = $this->host->get($this, "wallabag_url");
 		$w_cid = $this->host->get($this, "wallabag_client_id");
 		$w_cs = $this->host->get($this, "wallabag_client_secret");
@@ -188,13 +217,13 @@ class Wallabag_v2 extends Plugin {
 			$w_access = $this->host->get($this, "wallabag_access_token");
 			$old_timeout = $this->host->get($this, "wallabag_access_token_timeout");
 			$now = time();
-			if(W_V2_DEBUG) $token_type = "old";
+			if(W_V2_DEBUG) $result['auth_type'] = "old";
 			if( $old_timeout < $now ) {
-				if(W_V2_DEBUG) $token_type = "refreshed";
+				if(W_V2_DEBUG) $result['auth_type'] = "refreshed";
 				$w_refresh = $this->host->get($this, "wallabag_refresh_token");
 				$old_rTimeout = $this->host->get($this, "wallabag_access_token_timeout");
 				if( $old_rTimeout < $now ) {
-					if(W_V2_DEBUG) $token_type = "renewed";
+					if(W_V2_DEBUG) $result['auth_type'] = "renewed";
 					$w_user = $this->host->get($this, "wallabag_username");
 					$w_pass = $this->host->get($this, "wallabag_password");
 					$postfields = array(
@@ -219,12 +248,8 @@ class Wallabag_v2 extends Plugin {
 						curl_close($OAcURL);
 					$OAresult = json_decode($OAresult,true);
 
-					$w_access = $OAresult["access_token"];
-					$w_refresh = $OAresult["refresh_token"];
-					if(W_V2_DEBUG) { 
-						$w_auth_error 		= $OAresult["error"];
-						$w_auth_error_msg 	= $OAresult["error_description"];
-					}
+					$w_access = $OAresult['access_token'];
+					$w_refresh = $OAresult['refresh_token'];
 
 					if ($OAstatus == 200) {
 						$this->host->set($this, "wallabag_access_token", $w_access);
@@ -255,19 +280,13 @@ class Wallabag_v2 extends Plugin {
 
 					$OAresult = json_decode($OAresult,true);
 
-					$w_access = $OAresult["access_token"];
-					$w_refresh = $OAresult["refresh_token"];
-					if(W_V2_DEBUG) {
-						$w_auth_error = $OAresult["error"];
-						$w_auth_error_msg = $OAresult["error_description"];
-					}
+					$w_access = $OAresult['access_token'];
+					$w_refresh = $OAresult['refresh_token'];
 
 					if ($OAstatus == 200) {
-
 						$this->host->set($this, "wallabag_access_token", $w_access);
 						$this->host->set($this, "wallabag_access_token_timeout", $new_timeout);
 						$this->host->set($this, "wallabag_refresh_token", $w_refresh);
-
 					}
 				}
 			}
@@ -293,24 +312,16 @@ class Wallabag_v2 extends Plugin {
 							"title" 		=> $title,
 							"status" 		=> $status
 							);
-			if(W_V2_DEBUG) $result['auth_type'] = $token_type;
 
-			if($status !== 200 && W_V2_DEBUG){
-				
+			if($status !== 200){
 				$w_debug 			= json_decode($apicall,true);
-				$w_debug_error 		= $w_debug["error"];
-				$w_debug_error_msg 	= $w_debug["error_description"];
-
 				$result['auth_status'] 		= $OAstatus;
-				$result['auth_error'] 		= $w_auth_error;
-				$result['auth_error_msg'] 	= $w_auth_error_msg;
-				$result['error'] 			= $w_debug_error;
-				$result['error_msg'] 		= $w_debug_error_msg;
+				$result['auth_error'] 		= $OAresult['error'];
+				$result['auth_error_msg'] 	= $OAresult['error_description'];
+				$result['error'] 			= $w_debug['error'];
+				$result['error_msg'] 		= $w_debug['error_description'];
 				$result['refresh_token']	= $w_refresh;
 				$result['access_token'] 	= $w_access;
-
-				$debug_result = json_encode($result);
-				file_put_contents("plugins.local/wallabag_v2/debug.txt", date('Y-m-d H:i:s')."\r\n".$debug_result."\r\n", FILE_APPEND);
 			}
 
 		} else {
@@ -321,7 +332,14 @@ class Wallabag_v2 extends Plugin {
 						);
 		}
 
-		print json_encode($result);
+		if ( $result['status'] !== 200  && W_V2_DEBUG ) {
+			$result['source'] = $source;
+			file_put_contents("plugins.local/wallabag_v2/debug.txt", date('Y-m-d H:i:s')."\r\n".$debug_result."\r\nSEND\r\n", FILE_APPEND);
+		}
+
+		if ($source === 'button')  
+			return json_encode($result);
+
 	}
 
 	function api_version() {
