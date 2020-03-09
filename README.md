@@ -5,21 +5,7 @@ A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https
 ### Installing the plugin:
 
 #### Prepare Wallabag
-1. Double the life of the Wallabag api access tokens
-	- Open the file `app/config/config.yml` to edit
-	- Find the following section and add the final line:
-```
-fos_oauth_server:
-    service:
-        options:
-            access_token_lifetime: 7200
-```
-	__DO NOT USE TABS IN YML FILES__
-	- run the following command in the Wallabag root folder to enable the new configuration
-```
-sudo -u www-data php ./bin/console cache:clear -e prod
-```
-2. Create a new OAuth client in the Developer tab of Wallabag and take note of the client id and client secret.
+1. Create a new OAuth client in the Developer tab of Wallabag and take note of the client id and client secret.
 #### Prepare TT-Rss
 1. Clone this repo or just grab the [latest release](https://github.com/joshp23/ttrss-to-wallabag-v2/releases/latest) and extract the wallabag_v2 folder into the `plugins.local` folder of ttrss:  
 2. Install PHP Curl
