@@ -3,7 +3,7 @@ define( 'W_V2_DEBUG', false );
 class Wallabag_v2 extends Plugin {
 	private $host;
 	function about() {
-		return array("1.10.1",
+		return array("1.10.2",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -58,12 +58,14 @@ class Wallabag_v2 extends Plugin {
 			$status 	= curl_getinfo($cURL, CURLINFO_HTTP_CODE);
 				curl_close($cURL);
 			// prepare result data
+			$watt = time() + 3600;		// 1 hour
+			$wrtt = time() + 1123200;	// 13 days
 			$result 		= json_decode($result,true);
 			// store result data
 			$this->host->set($this, "wallabag_access_token", $result['access_token']);
-			$this->host->set($this, "wallabag_access_token_timeout", $time() + 3600); 		// 1 hour
+			$this->host->set($this, "wallabag_access_token_timeout", $watt );
 			$this->host->set($this, "wallabag_refresh_token", $result['refresh_token']);
-			$this->host->set($this, "wallabag_refresh_token_timeout", $time() + 1123200); 	// 13 days
+			$this->host->set($this, "wallabag_refresh_token_timeout", $wrtt);
 		} else {
 			// get curl!
 			$status 		= 501;
@@ -114,25 +116,28 @@ class Wallabag_v2 extends Plugin {
 		$w_csec = $this->host->get($this, "wallabag_client_secret");
 		$w_access = $this->host->get($this, "wallabag_access_token");
 
-		 print "<div dojoType=\"dijit.layout.AccordionPane\" 
+		print "<div dojoType=\"dijit.layout.AccordionPane\" 
 					title=\" <i class='material-icons'>share</i> ".__("Wallabag v2")."\">";
-		 print "<br/>";
-		 print "<form dojoType=\"dijit.form.Form\">";
-		 print "<script type=\"dojo/method\" event=\"onSubmit\" args=\"evt\">
-				   evt.preventDefault();
-					   if (this.validate()) {
-						   console.log(dojo.objectToQuery(this.getValues()));
-						   new Ajax.Request('backend.php', {
-						                        parameters: dojo.objectToQuery(this.getValues()),
-						                        onComplete: function(transport) {
-						                             notify_info(transport.responseText);
-						                        }
-						                    });
-					   }
-			   </script>";
-		print "<input dojoType=\"dijit.form.TextBox\" style=\"display : none\" name=\"op\" value=\"pluginhandler\">";
-		print "<input dojoType=\"dijit.form.TextBox\" style=\"display : none\" name=\"method\" value=\"save\">";
-		print "<input dojoType=\"dijit.form.TextBox\" style=\"display : none\" name=\"plugin\" value=\"wallabag_v2\">";
+		print "<br/>";
+		print "<form dojoType=\"dijit.form.Form\">";
+
+		print "<script type=\"dojo/method\" event=\"onSubmit\" args=\"evt\">
+			evt.preventDefault();
+			if (this.validate()) {
+				console.log(dojo.objectToQuery(this.getValues()));
+				new Ajax.Request('backend.php', {
+					parameters: dojo.objectToQuery(this.getValues()),
+					onComplete: function(transport) {
+						Notify.info(transport.responseText);
+					}
+				});
+				//this.reset();
+			}
+			</script>";
+
+		print_hidden("op", "pluginhandler");
+		print_hidden("method", "save");
+		print_hidden("plugin", "wallabag_v2");
 		print "<table width=\"100%\" class=\"prefPrefsList\">";
 		print "<tr><td width=\"40%\">".__("Wallabag URL (No trailing slash!)")."</td>";
 		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" required=\"true\" name=\"wallabag_url\" regExp='^(http|https)://.*' value=\"$w_url\"></td></tr>";
@@ -253,13 +258,13 @@ class Wallabag_v2 extends Plugin {
 					$OAresult 	= json_decode($OAresult,true);
 					// success?
 					if ($OAstatus == 200) {
-						$aTimeout =  time() + 3600;		// 1 hour
-						$rTimeout =  time() + 1123200; 	// 13 days
+						$watt = time() + 3600;		// 1 hour
+						$wrtt = time() + 1123200;	// 13 days
 						// store new tokens and values
 						$this->host->set($this, "wallabag_access_token", $OAresult['access_token']);
-						$this->host->set($this, "wallabag_access_token_timeout", $time() + 3600 ); 		// 1 hour
+						$this->host->set($this, "wallabag_access_token_timeout", $watt);
 						$this->host->set($this, "wallabag_refresh_token", $OAresult['refresh_token']);
-						$this->host->set($this, "wallabag_refresh_token_timeout", time() + 1123200 );	// 13 days
+						$this->host->set($this, "wallabag_refresh_token_timeout", $wrtt);
 					}
 
 				} else {
@@ -288,9 +293,10 @@ class Wallabag_v2 extends Plugin {
 					$OAresult 	= json_decode($OAresult,true);
 					// success?
 					if ($OAstatus == 200) {
+						$watt = time() + 3600;	// 1 hour
 						// store new tokens
 						$this->host->set($this, "wallabag_access_token", $OAresult['access_token']);
-						$this->host->set($this, "wallabag_access_token_timeout", time() + 3600 ); // 1 hour
+						$this->host->set($this, "wallabag_access_token_timeout", $watt);
 						$this->host->set($this, "wallabag_refresh_token", $OAresult['refresh_token']);
 					}
 				}
