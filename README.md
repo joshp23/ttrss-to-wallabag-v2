@@ -12,7 +12,7 @@ A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https
 	```
 	sudo apt-get install php-curl
 	```
-3. Enable `wallabag_v2` in the TT-Rss config file
+3. Either enable Wallabag v2 in preferences dialogue or the TT-Rss config file
 	```
 	define('PLUGINS', '..., wallabag_v2');
 	```
