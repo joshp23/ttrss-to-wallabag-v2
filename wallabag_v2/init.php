@@ -218,6 +218,7 @@ class Wallabag_v2 extends Plugin {
 	private function _send( $title, $article_link, $source ) {
 		// got curl?
 		if (function_exists('curl_init')) {
+			$result = $this->_oauth();
 			// gather values
 			$w_url 		= $this->host->get($this, "wallabag_url");
 			$w_cid 		= $this->host->get($this, "wallabag_client_id");
@@ -228,8 +229,6 @@ class Wallabag_v2 extends Plugin {
 				'access_token' => $w_access,
 				'url'          => $article_link
 			);
-
-			$result = $this->_oauth();
 
 			// call curl
 			$cURL = curl_init();
@@ -264,8 +263,7 @@ class Wallabag_v2 extends Plugin {
 		// log data in dubug.txt
 		if ( $result['status'] !== 200  && W_V2_DEBUG ) {
 			$result['source'] = $source;
-			$debug_result = json_encode($result);
-			file_put_contents("plugins.local/wallabag_v2/debug.txt", date('Y-m-d H:i:s')."\r\nSEND\r\n".$debug_result."\r\n", FILE_APPEND);
+			file_put_contents("plugins.local/wallabag_v2/debug.txt", date('Y-m-d H:i:s')."\r\nSEND\r\n".json_encode($result)."\r\n", FILE_APPEND);
 		}
 		// return data for button submission
 		if ($source === 'button')  
@@ -276,7 +274,7 @@ class Wallabag_v2 extends Plugin {
 	private function _oauth() {
 		// got curl?
 		if (function_exists('curl_init')) {
-			$auth_type = "old";
+			$auth_type = "fresh";
 			// gather value
 			$ato = $this->host->get($this, "wallabag_access_token_timeout");
 			$now = time();
@@ -289,7 +287,7 @@ class Wallabag_v2 extends Plugin {
 				// check refresh token age
 				if( $now >= $r_ato ) {
 					// obtain new access token utilizing passwords
-					$auth_type 	= "renewed";
+					$auth_type 	= "upass";
 					$postfields['username'] = $this->host->get($this, "wallabag_username");
 					$postfields['password'] = $this->host->get($this, "wallabag_password");
 					$postfields['grant_type'] = "password";
@@ -321,34 +319,33 @@ class Wallabag_v2 extends Plugin {
 					$watt = time() + 3600;		// 1 hour
 					$wrtt = time() + 1123200;	// 13 days
 					// store new tokens and values
-					$this->host->set($this, "wallabag_access_token", $cURL['access_token']);
+					$this->host->set($this, "wallabag_access_token", $result['access_token']);
 					$this->host->set($this, "wallabag_access_token_timeout", $watt);
-					$this->host->set($this, "wallabag_refresh_token", $cURL['refresh_token']);
+					$this->host->set($this, "wallabag_refresh_token", $result['refresh_token']);
 					$this->host->set($this, "wallabag_refresh_token_timeout", $wrtt);
 				}
 
 			} else {
 				$status = 200;
 			}
+
 		} else {
-			$status						= 501;
-			$cURL['error'] 				= "PEBCAK";
-			$cURL['error_description'] 	= "Please <strong>enable PHP extension CURL</strong>!";
+			$status 				= 501;
+			$result['error']		= "PEBCAK",
+			$result['error_msg'] 	= "Please <strong>enable PHP extension CURL</strong>!";
 		}
+
+		$result['auth_type'] 		= $auth_type;
+		$result['auth_status'] 		= $status;
+
 		if( $status !== 200 && W_V2_DEBUG ){
 			// prepare debug data and write to file
-			$result['auth_type'] 		= $auth_type;
-			$result['auth_status'] 		= $status;
-			$result['auth_error'] 		= $cURL['error'];
-			$result['auth_error_msg'] 	= $cURL['error_description'];
-			$result['refresh_token']	= $cURL['refresh_token'];
-			$result['access_token'] 	= $cURL['access_token'];
-			$result 					= json_encode($result);
-			file_put_contents("plugins.local/wallabag_v2/debug.txt", date('Y-m-d H:i:s')."\r\nOAUTH\r\n".$result."\r\n", FILE_APPEND);
+			$result['auth_error'] 		= $result['error'];
+			$result['auth_error_msg'] 	= $result['error_description'];
+			file_put_contents("plugins.local/wallabag_v2/debug.txt", date('Y-m-d H:i:s')."\r\nOAUTH\r\n".json_encode($result)."\r\n", FILE_APPEND);
 		}
 
 		return $result;
-
 	}
 
 	function api_version() {
