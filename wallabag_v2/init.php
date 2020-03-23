@@ -3,7 +3,7 @@ define( 'W_V2_DEBUG', false );
 class Wallabag_v2 extends Plugin {
 	private $host;
 	function about() {
-		return array("1.10.4",
+		return array("1.10.5",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
@@ -98,13 +98,13 @@ class Wallabag_v2 extends Plugin {
 				curl_setopt($cURL, CURLOPT_POST, true);
 				curl_setopt($cURL, CURLOPT_SSL_VERIFYPEER, false);
 				curl_setopt($cURL, CURLOPT_POSTFIELDS, http_build_query($postfields));
-			$result 	= curl_exec($cURL);
-			$status 	= curl_getinfo($cURL, CURLINFO_HTTP_CODE);
+			$result = curl_exec($cURL);
+			$status = curl_getinfo($cURL, CURLINFO_HTTP_CODE);
 				curl_close($cURL);
 			// prepare result data
-			$watt = time() + 3600;		// 1 hour
-			$wrtt = time() + 1123200;	// 13 days
-			$result 		= json_decode($result,true);
+			$watt 	= time() + 3600;		// 1 hour
+			$wrtt 	= time() + 1123200;	// 13 days
+			$result = json_decode($result,true);
 			// store result data
 			$this->host->set($this, "wallabag_access_token", $result['access_token']);
 			$this->host->set($this, "wallabag_access_token_timeout", $watt );
@@ -193,25 +193,19 @@ class Wallabag_v2 extends Plugin {
 	}
 
 	function hook_article_filter_action($article, $action) {
-
 		if ( $action == 'wallabag_v2_send_to_Wallabag' ) {
-
 			$tags = (is_array($article['tags'])) ? array_flip($article['tags']) : array();
-
 			if ( !isset( $tags['w_v2'] ) ) {
-	
 				$source = 'filter';
 				$title = truncate_string(strip_tags($article['title']), 100, '...');
-				$article_link = $article['link'];
 
-				$this->_send( $title, $article_link, $source );
+				$this->_send( $title, $article['link'], $source );
 
 				$tags = array_keys( $tags );
 				$tags[] = 'w_v2';
 				$article['tags'] = $tags;
 			}
 		}
-
 		return $article;
 	}
 
@@ -229,7 +223,6 @@ class Wallabag_v2 extends Plugin {
 				'access_token' => $w_access,
 				'url'          => $article_link
 			);
-
 			// call curl
 			$cURL = curl_init();
 				curl_setopt($cURL, CURLOPT_URL, $w_url.'/api/entries.json');
@@ -252,7 +245,6 @@ class Wallabag_v2 extends Plugin {
 				$result['error'] 			= $debug['error'];
 				$result['error_msg'] 		= $debug['error_description'];
 			}
-
 		} else {
 			$result = array(
 						"status" 	=> 501,
@@ -268,7 +260,6 @@ class Wallabag_v2 extends Plugin {
 		// return data for button submission
 		if ($source === 'button')  
 			return json_encode($result);
-
 	}
 
 	private function _oauth() {
@@ -331,7 +322,7 @@ class Wallabag_v2 extends Plugin {
 
 		} else {
 			$status 				= 501;
-			$result['error']		= "PEBCAK",
+			$result['error']		= "PEBCAK";
 			$result['error_msg'] 	= "Please <strong>enable PHP extension CURL</strong>!";
 		}
 
