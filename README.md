@@ -17,7 +17,7 @@ A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https
 	define('PLUGINS', '..., wallabag_v2');
 	```
 4. In TT-Rss: Simply fill in the details in the Wallabag V2 Preferences dialogue. 
-5. Enjoy 1-click posting to Wallabag! (Use _Hotkeys!_ S + W )
+5. Enjoy 1-click posting to Wallabag! (Use _Hotkeys!_ A + W )
 6. Optional: Set [Content Filters](https://tt-rss.org/wiki/ContentFilters) in TT-Rss for automatic article sending to Wallabag. 
 
 ### Notes:
