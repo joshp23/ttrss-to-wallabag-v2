@@ -22,55 +22,52 @@ class Wallabag_v2 extends Plugin {
 	function hook_prefs_tab($args) {
 		if ($args != "prefPrefs") return;
 
-	    $w_user 	= $this->host->get($this, "wallabag_username");
-	    $w_pass 	= $this->host->get($this, "wallabag_password");
-		$w_url 		= $this->host->get($this, "wallabag_url");
-		$w_cid 		= $this->host->get($this, "wallabag_client_id");
-		$w_csec 	= $this->host->get($this, "wallabag_client_secret");
-		$w_access 	= $this->host->get($this, "wallabag_access_token");
+	    $w_user = $this->host->get($this, "wallabag_username");
+	    $w_pass = $this->host->get($this, "wallabag_password");
+		$w_url = $this->host->get($this, "wallabag_url");
+		$w_cid = $this->host->get($this, "wallabag_client_id");
+		$w_csec = $this->host->get($this, "wallabag_client_secret");
+		$w_access = $this->host->get($this, "wallabag_access_token");
 
-		print "<div dojoType=\"dijit.layout.AccordionPane\" 
-					title=\" <i class='material-icons'>share</i> ".__("Wallabag v2")."\">";
-		print "<br/>";
-		print "<form dojoType=\"dijit.form.Form\">";
+		?>
+		<div dojoType='dijit.layout.AccordionPane' 
+			title="<i class='material-icons'>share</i> <?= __('Wallabag v2') ?>">
+			<br/>
+			<form dojoType='dijit.form.Form'>
 
-		print "<script type=\"dojo/method\" event=\"onSubmit\" args=\"evt\">
-			evt.preventDefault();
-			if (this.validate()) {
-				console.log(dojo.objectToQuery(this.getValues()));
-				new Ajax.Request('backend.php', {
-					parameters: dojo.objectToQuery(this.getValues()),
-					onComplete: function(transport) {
-						Notify.info(transport.responseText);
+				<?= \Controls\pluginhandler_tags($this, "save") ?>
+				<script type="dojo/method" event="onSubmit" args="evt">
+					evt.preventDefault();
+					if (this.validate()) {
+						Notify.progress('Saving wallabag configuration...', true);
+						xhr.post("backend.php", this.getValues(), (reply) => {
+							Notify.info(reply);
+						})
 					}
-				});
-				//this.reset();
-			}
-			</script>";
+				</script>
 
-		print_hidden("op", "pluginhandler");
-		print_hidden("method", "save");
-		print_hidden("plugin", "wallabag_v2");
-		print "<table width=\"100%\" class=\"prefPrefsList\">";
-		print "<tr><td width=\"40%\">".__("Wallabag URL (No trailing slash!)")."</td>";
-		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" required=\"true\" name=\"wallabag_url\" regExp='^(http|https)://.*' value=\"$w_url\"></td></tr>";
-		print "<tr><td width=\"40%\">".__("Wallabag Username")."</td>";
-		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_username\" regExp='\w{0,64}' value=\"$w_user\"></td></tr>";
-		print "<tr><td width=\"40%\">".__("Wallabag Password")."</td>";
-		print "<td class=\"prefValue\"><input type=\"password\" dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_password\" regExp='.{0,64}' value=\"$w_pass\"></td></tr>";
-		print "<tr><td width=\"40%\">".__("Wallabag Client ID")."</td>";
-		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_client_id\" regExp='.{0,64}' value=\"$w_cid\"></td></tr>";
-		print "<tr><td width=\"40%\">".__("Wallabag Client Secret")."</td>";
-		print "<td class=\"prefValue\"><input dojoType=\"dijit.form.ValidationTextBox\" name=\"wallabag_client_secret\" regExp='.{0,64}' value=\"$w_csec\"></td></tr>";
-		print "</table>";
-		print "<p><button dojoType=\"dijit.form.Button\" type=\"submit\">".__("Save")."</button>"; 
-		if($w_access == null || $w_access == false|| $w_access == "") {
-			print "<strong style=\"color:red;\">  Alert</strong>: No OAuth tokens in Database! Submit Username and Password to retrieve new tokens.";
-		} else {
-			print "  Submit this form without a Username and Password to reset the Wallabag OAuth Tokens to a null value.";
-		}
-		print "</form>";
-		print "</div>"; #pane
+		<table width='100%' class='prefPrefsList'>
+		<tr><td width='40%'> <?= __("Wallabag URL (No trailing slash!)") ?></td>
+		<td class='prefValue'><input dojoType='dijit.form.ValidationTextBox' required='true' name='wallabag_url' regExp='^(http|https)://.*' value='<?= $w_url ?>'></td></tr>
+		<tr><td width='40%'><?= __("Wallabag Username") ?></td>
+		<td class='prefValue'><input dojoType='dijit.form.ValidationTextBox' name='wallabag_username' regExp='\w{0,64}' value='<?= $w_user ?>'></td></tr>
+		<tr><td width='40%'><?= __("Wallabag Password") ?></td>
+		<td class='prefValue'><input type='password' dojoType='dijit.form.ValidationTextBox' name='wallabag_password' regExp='.{0,64}' value='<?= $w_pass ?>'></td></tr>
+		<tr><td width='40%'><?= __("Wallabag Client ID") ?></td>
+		<td class='prefValue'><input dojoType='dijit.form.ValidationTextBox' name='wallabag_client_id' regExp='.{0,64}' value='<?= $w_cid ?>'></td></tr>
+		<tr><td width='40%'><?= __("Wallabag Client Secret") ?></td>
+		<td class='prefValue'><input dojoType='dijit.form.ValidationTextBox' name='wallabag_client_secret' regExp='.{0,64}' value='<?= $w_csec ?>'></td></tr>
+		</table>
+
+				<?= \Controls\submit_tag(__("Save")) ?>
+		<?php if($w_access == null || $w_access == false|| $w_access == "") { ?>
+			<strong style='color:red;'>  Alert</strong>: No OAuth tokens in Database! Submit Username and Password to retrieve new tokens.
+		<?php } else { ?>
+			Submit this form without a Username and Password to reset the Wallabag OAuth Tokens to a null value.
+		<?php } ?>
+			</form>
+		</div>
+		<?php
 	}
 
 	function save() {
