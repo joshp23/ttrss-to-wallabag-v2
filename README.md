@@ -7,15 +7,12 @@ A [TT-RSS](https://tt-rss.org/) plugin for saving links to a [Wallabag v2](https
 #### Prepare Wallabag
 1. Create a new OAuth client in the Developer tab of Wallabag and take note of the client id and client secret.
 #### Prepare TT-Rss
-1. Clone this repo or just grab the [latest release](https://github.com/joshp23/ttrss-to-wallabag-v2/releases/latest) and extract the wallabag_v2 folder into the `plugins.local` folder of ttrss:  
+1. Clone this repo or just grab the [latest release](https://github.com/joshp23/ttrss-to-wallabag-v2/releases/latest) and extract the wallabag_v2 folder into the `plugins.local` folder of TT-RSS v21.03-6ec66d0ce +:  
 2. Install PHP Curl
 	```
 	sudo apt-get install php-curl
 	```
 3. Either enable Wallabag v2 in preferences dialogue or the TT-Rss config file
-	```
-	define('PLUGINS', '..., wallabag_v2');
-	```
 4. In TT-Rss: Simply fill in the details in the Wallabag V2 Preferences dialogue. 
 5. Enjoy 1-click posting to Wallabag! (Use _Hotkeys!_ A + W )
 6. Optional: Set [Content Filters](https://tt-rss.org/wiki/ContentFilters) in TT-Rss for automatic article sending to Wallabag. 

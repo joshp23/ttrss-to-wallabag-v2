@@ -3,7 +3,7 @@ define( 'W_V2_DEBUG', false );
 class Wallabag_v2 extends Plugin {
 	private $host;
 	function about() {
-		return array("1.10.5",
+		return array("2.0.0",
 			"Post articles to a Wallabag v 2.x instance",
 			"joshu@unfettered.net");
 	}
