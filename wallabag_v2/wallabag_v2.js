@@ -1,28 +1,26 @@
 function postArticleToWallabag(id) {
     try {
 		Notify.progress("Saving to Wallabag …", true);
-		new Ajax.Request("backend.php",	{
-				parameters: {
+		xhr.json("backend.php",	
+				{
 					'op': 'pluginhandler',
 					'plugin': 'wallabag_v2',
 					'method': 'getwallabagInfo',
 					'id': encodeURIComponent(id)
 				},
-				onSuccess: function(transport) {
-					var ti = JSON.parse(transport.responseText);
-						if (ti.status) {
-								if (ti.status=="200") {
-									Notify.info("Saved to Wallabag: <em>" + ti.title + "</em>");
-								} else {
-									Notify.error("<strong>Error saving to Wallabag!</strong>: ("+ti.status+": "+ti.error+") "+ti.error_msg+"");
-								}
-						}  else {
-							Notify.error("The Wallabag_v2 plugin needs to be configured. See the README for help", true);
+				(reply) => {
+					if (reply.status) {
+						if (reply.status=="200") {
+							Notify.info("Saved to Wallabag: <em>" + reply.title + "</em>");
+						} else {
+							Notify.error("<strong>Error saving to Wallabag!</strong>: ("+reply.status+": "+reply.error+") "+reply.error_msg+"");
 						}
-				}
-		});
+					}  else {
+						Notify.error("The Wallabag_v2 plugin needs to be configured. See the README for help", true);
+					}
+				});
     } catch (e) {
-		exception_error("wallabagArticle", e);
+	Notify.error("wallabagArticle", e);
     }
 }
 
