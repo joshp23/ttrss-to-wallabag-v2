@@ -5,7 +5,8 @@ class Wallabag_v2 extends Plugin {
 	function about() {
 		return array("2.0.0",
 			"Post articles to a Wallabag v 2.x instance",
-			"joshu@unfettered.net");
+			"joshu@unfettered.net",
+			"https://github.com/joshp23/ttrss-to-wallabag-v2");
 	}
 
 	function init($host) {
