@@ -3,7 +3,7 @@ function postArticleToWallabag(id) {
 		Notify.progress("Saving to Wallabag …", true);
 		xhr.json("backend.php",	
 				{
-					'op': 'pluginhandler',
+					'op': 'PluginHandler',
 					'plugin': 'wallabag_v2',
 					'method': 'getwallabagInfo',
 					'id': encodeURIComponent(id)
